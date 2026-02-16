@@ -1,0 +1,59 @@
+# ============================================
+# CONFIGURACIÓN
+# ============================================
+
+$basePath   = "C:\cursoEdx\bandit_project"
+$excludeDir = Join-Path $basePath "scripts"
+$outputFile = Join-Path $basePath "all_code_concatenated.txt"
+
+# Tamaño de chunk (en líneas)
+$chunkSize = 10000
+
+# ============================================
+# 1. BORRAR FICHERO ANTERIOR
+# ============================================
+
+if (Test-Path $outputFile) {
+    Remove-Item $outputFile
+}
+
+# ============================================
+# 2. RECORRER TODOS LOS .py EXCEPTO /scripts
+# ============================================
+
+$files = Get-ChildItem -Path $basePath -Recurse -Filter *.py |
+         Where-Object { $_.DirectoryName -notlike "$excludeDir*" }
+
+foreach ($file in $files) {
+
+    Add-Content -Path $outputFile -Value "`n`n# ================================================"
+    Add-Content -Path $outputFile -Value "# FILE: $($file.FullName)"
+    Add-Content -Path $outputFile -Value "# ================================================`n"
+
+    Get-Content $file.FullName | Add-Content -Path $outputFile
+}
+
+# ============================================
+# 3. DIVIDIR EN CHUNKS
+# ============================================
+
+$lines = Get-Content $outputFile
+$totalLines = $lines.Count
+$chunkIndex = 1
+$start = 0
+
+while ($start -lt $totalLines) {
+
+    $end = [Math]::Min($start + $chunkSize - 1, $totalLines - 1)
+    $chunkLines = $lines[$start..$end]
+
+    $chunkName = "all_code_part_{0:D3}.txt" -f $chunkIndex
+    $chunkPath = Join-Path $basePath $chunkName
+
+    Set-Content -Path $chunkPath -Value $chunkLines
+
+    $chunkIndex++
+    $start += $chunkSize
+}
+
+Write-Host "Exportación completada. Se generaron $($chunkIndex - 1) chunks."

@@ -1,0 +1,5 @@
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+Set-ExecutionPolicy -Scope LocalMachine RemoteSigned
+Set-ExecutionPolicy -Scope CurrentUser Restricted
+Set-ExecutionPolicy -Scope LocalMachine Restricted
+
