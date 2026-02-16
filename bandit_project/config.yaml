@@ -1,0 +1,94 @@
+# ============================================================
+# CONFIGURACIÓN GENERAL DEL EXPERIMENTO
+# configuracion carga de datos.
+#   min_number_of_reviews: solo se cargan peliculas a partir de este numero de visionado.
+#  limite_rating: en recompensa binaria puntuacion para indicar un like
+#  balanceo_clases: false no usado.
+#  cargar_generos:false evita cargar las columnas de genero de la pelicula
+#  tipo_de_recompensa:"Continua" o Bernouilli. indica si la recompensa es numerica o binaria
+#  fichero_datos: "C:\cursoEdx\bandit_project\elegidos.csv" fichero de datos para acelerar la carga
+# ============================================================
+dataset:
+  min_number_of_reviews: 20000
+  limite_rating: 4.5
+  balanceo_clases: False
+  cargar_generos: False
+  tipo_de_recompensa: "Categorica"
+  fichero_datos_continua: "C:/cursoEdx/bandit_project/elegidos_continua.csv"
+  fichero_datos_categorica: "C:/cursoEdx/bandit_project/elegidos_categorica.csv"
+  fichero_datos_bernouilli: "C:/cursoEdx/bandit_project/elegidos_bernouilli.csv"
+  
+general:
+  modo: "None"
+  bloque_debug: 100000
+  batch_size: 1000
+  slate_size: 5
+  minimo_eventos: 0
+  verbose: true
+  window_best: 500
+  window_global: 500
+  window_variacion: 500
+  margen: 5
+  lim_entropia_cat: 2
+  dataset_path: "data/ratings.csv"
+  index_replay_path: "data/index_replay.pkl"
+
+
+# ============================================================
+# LISTA DE POLÍTICAS A EJECUTAR name es el nombre de la clase de la politica
+# politicas
+# Comunes EpsilonGreedyPolicy, UCBPolicy , BoltzmannPolicy, 
+# bernouilli ThomsomSampligPolicy, BayesUCBPolicy
+# Gaussiana GaussianThompsonSamplingPolicy 
+# modos greedy: Decay, Fijo, Varianza, Mixto, 
+# modos ucb Classic (alpha=1), Tuned, Varianza, KL
+# modos TS: Bernouilli
+# modos BootstrappedThompsonPolicy: BTS, BTS-P
+# ============================================================
+policies:
+#   - name: BootstrappedThompsonPolicy
+#     modo: "BTS" 
+#     sample_size: 100
+     
+#   - name: BootstrappedThompsonPolicy
+#     modo: "BTS-P" 
+#     sample_size: 100
+#     percentile: 90
+     
+#   - name: GaussianUCBPolicy
+
+#   - name: GaussianThompsonSamplingPolicy
+#     mu0: 0.0
+#     tau0: 1.0
+#     sigma2: 1.0
+
+    - name: CategoricalBoltzmannPolicy
+      categorias: [A,B,C,D,E,F,G,H,I,J]
+      pesos: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]      
+      t_softmax: 1.0
+
+    - name: CategoricalThompsonSamplingPolicy
+      categorias: [A,B,C,D,E,F,G,H,I,J]
+      pesos: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+
+    - name: CategoricalUCBPolicy
+      categorias: [A,B,C,D,E,F,G,H,I,J]
+      pesos: [0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
+      factorExploracion: 0.1
+
+ 
+#sweeps:
+#   temperatura:[0.5, 1.0]
+
+#  - name: BayesUCBPolicy
+#  - name: EpsilonGreedyPolicy
+#    modo: "Decay"
+#    epsilon: 0.3
+#    decay_rate: 0.999
+#    min_epsilon: 0.01
+#    max_epsilon: 0.3
+#    factor_exp: 1.0
+    
+
+
+    

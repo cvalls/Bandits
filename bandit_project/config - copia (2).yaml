@@ -1,0 +1,41 @@
+# ============================================================
+# CONFIGURACIÓN GENERAL DEL EXPERIMENTO
+# ============================================================
+general:
+  batch_size: 100
+  slate_size: 5
+  minimo_eventos: 0
+  num_visionados_dataset: 10000
+  balanceo_clases: false
+  verbose: true
+  window_best: 500
+  window_global: 500
+  window_variacion: 500
+  margen: 5
+  fichero_datos: "C:/cursoEdx/ml-25m/elegidos.csv"
+  dataset_path: "data/ratings.csv"
+  index_replay_path: "data/index_replay.pkl"
+
+
+# ============================================================
+# LISTA DE POLÍTICAS A EJECUTAR
+# ============================================================
+policies:
+
+  # ------------------------------
+  # Política 1: Epsilon Greedy Decay
+  # ------------------------------
+  - name: epsilon_greedy
+    modo: "Decay"
+    epsilon: 0.3
+    decay_rate: 0.999
+    min_epsilon: 0.01
+    max_epsilon: 0.3
+    factor_exp: 1.0
+
+# ============================================================
+# BARRIDOS DE PARÁMETROS (OPCIONAL)
+# ============================================================
+sweeps:
+  epsilon: [0.05, 0.1, 0.2, 0.3]
+  decay_rate: [0.99, 0.999]
