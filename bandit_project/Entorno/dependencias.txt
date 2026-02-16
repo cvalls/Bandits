@@ -1,0 +1,194 @@
+Diagrama de dependencias del proyecto (vista global)
+main.py
+¦
++-- param.py
++-- sdata.py
++-- cs.py
+¦
++-- bandit/
+¦   +-- bandit.py
+¦   +-- policy.py
+¦   +-- runner.py
+¦   +-- utils.py
+¦
++-- regret/
+¦   +-- tracker.py
+¦
++-- dashboard/
+¦   +-- dashboard.py
+¦
++-- metricas/
+¦   +-- MetricaMejorBrazoFinal
+¦   +-- MetricaDatosMejorPeli
+¦   +-- MetricaFrecuenciaMejorBrazo
+¦   +-- MetricaEstabilidadSlate
+¦   +-- MetricaEntropiaRecomendaciones
+¦   +-- MetricaVariacionRewards
+¦   +-- MetricaPrimerBatchConvergencia
+¦   +-- MetricaVariacionRelativaMedias
+¦
++-- diagnostico.py
+
+
+Flujo principal del experimento (dependencias funcionales)
+main.py
+¦
++-- param.recibeParametros()
+¦
++-- sdata.cargarPeliculasElegidas()
+¦       +-- carga el DataFrame df
+¦
++-- cs.crear_Brazo()
+¦       +-- crea objetos Brazo para cada movieId
+¦
++-- bandit.utils.fijarMediasReales()
+¦       +-- medias reales para regret teórico
+¦
++-- ClassicUCBPolicy (bandit/policy.py)
+¦
++-- RegretTracker (regret/tracker.py)
+¦
++-- Bandit (bandit/bandit.py)
+¦       +-- usa policy
+¦       +-- usa brazos
+¦       +-- usa mediasReales
+¦       +-- actualiza regret
+¦
++-- ExperimentRunner (bandit/runner.py)
+¦       +-- ejecuta el bucle de batches y slates
+¦
++-- Diagnostico (diagnostico.py)
+¦       +-- ejecuta todas las métricas del módulo metricas/
+¦
++-- BanditDashboard (dashboard/dashboard.py)
+        +-- genera panel visual con las trazas
+
+Diagrama de dependencias detallado (quién importa a quién)
+main.py importa:
+param
+
+sdata
+
+cs
+
+bandit.bandit
+
+bandit.policy
+
+bandit.runner
+
+bandit.utils
+
+regret.tracker
+
+dashboard.dashboard
+
+metricas.*
+
+diagnostico
+
+bandit/bandit.py importa:
+policy (para decidir qué brazo elegir)
+
+regret.tracker (para registrar regret)
+
+utils (para medias reales)
+
+Brazo (desde cs.py, indirectamente)
+
+bandit/runner.py importa:
+Bandit
+
+policy
+
+numpy
+
+pandas
+
+diagnostico.py importa:
+Todas las métricas del módulo metricas/
+
+dashboard/dashboard.py importa:
+matplotlib
+
+numpy
+
+pandas
+
+metricas/
+Cada métrica es independiente y solo usa:
+
+numpy
+
+pandas
+
+datos del experimento que le pasa Diagnostico
+
+CALL GRAPH DEL PROYECTO (EJECUCIÓN COMPLETA)
+main.py
+¦
++-- recibeParametros()     ? param.py
+¦
++-- cargarPeliculasElegidas()     ? sdata.py
+¦       +-- devuelve df
+¦
++-- crear_Brazo()                 ? cs.py
+¦       +-- crea lista de objetos Brazo
+¦
++-- fijarMediasReales()           ? bandit/utils.py
+¦       +-- calcula medias reales por movieId
+¦
++-- run_experimento_ucb()         ? main.py
+¦       ¦
+¦       +-- ClassicUCBPolicy()    ? bandit/policy.py
+¦       ¦
+¦       +-- RegretTracker()       ? regret/tracker.py
+¦       ¦
+¦       +-- Bandit()              ? bandit/bandit.py
+¦       ¦       ¦
+¦       ¦       +-- inicializar brazos
+¦       ¦       +-- registrar medias reales
+¦       ¦       +-- preparar estructuras internas
+¦       ¦
+¦       +-- ExperimentRunner()    ? bandit/runner.py
+¦               ¦
+¦               +-- run()
+¦                   ¦
+¦                   +-- for batch in range(num_batches):
+¦                   ¦       ¦
+¦                   ¦       +-- policy.seleccionar_slate()
+¦                   ¦       ¦       +-- UCB: calcula índices UCB por brazo
+¦                   ¦       ¦
+¦                   ¦       +-- bandit.recomendar(slate)
+¦                   ¦       ¦       +-- devuelve lista de brazos recomendados
+¦                   ¦       ¦
+¦                   ¦       +-- obtener_rewards(slate)   ? runner
+¦                   ¦       ¦       +-- simula reward por película
+¦                   ¦       ¦
+¦                   ¦       +-- bandit.actualizar(brazo, reward)
+¦                   ¦       ¦       +-- brazo.actualizar_media()
+¦                   ¦       ¦       +-- policy.actualizar_estado()
+¦                   ¦       ¦       +-- regretTracker.actualizar()
+¦                   ¦       ¦
+¦                   ¦       +-- almacenar trazas en DataFrame
+¦                   ¦
+¦                   +-- devuelve resultados del experimento
+¦
++-- Diagnostico()                 ? diagnostico.py
+¦       ¦
+¦       +-- ejecutar_metrica(MetricaMejorBrazoFinal)
+¦       +-- ejecutar_metrica(MetricaDatosMejorPeli)
+¦       +-- ejecutar_metrica(MetricaFrecuenciaMejorBrazo)
+¦       +-- ejecutar_metrica(MetricaEstabilidadSlate)
+¦       +-- ejecutar_metrica(MetricaEntropiaRecomendaciones)
+¦       +-- ejecutar_metrica(MetricaVariacionRewards)
+¦       +-- ejecutar_metrica(MetricaPrimerBatchConvergencia)
+¦       +-- ejecutar_metrica(MetricaVariacionRelativaMedias)
+¦
++-- BanditDashboard()             ? dashboard/dashboard.py
+        +-- generar_panel()
+                +-- plot_rewards()
+                +-- plot_regret()
+                +-- plot_medias()
+                +-- plot_entropia()
+                +-- plot_frecuencias()
